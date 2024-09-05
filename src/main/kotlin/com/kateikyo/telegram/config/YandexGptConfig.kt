@@ -1,4 +1,4 @@
-package com.kateikyo.telegram
+package com.kateikyo.telegram.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
