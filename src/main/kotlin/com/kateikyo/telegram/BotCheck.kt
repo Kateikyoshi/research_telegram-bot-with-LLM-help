@@ -1,5 +1,7 @@
 package com.kateikyo.telegram
 
+import com.kateikyo.telegram.config.BotConfig
+import com.kateikyo.telegram.gpt.YandexGptClient
 import jakarta.annotation.PostConstruct
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -52,9 +54,9 @@ class BotCheck(
         logger.info("chat id: ${message.chatId}")
 
         if (message.isForwardedFromChannel()
-            && botConfig.groupIdsToReplyTo.contains(message.chatId)
+            && (botConfig.groupFiltering.disable || botConfig.groupFiltering.groupIdsToReplyTo.contains(message.chatId))
         ) {
-            if (botConfig.usersToModerate.contains(message.from.userName)) {
+            if (botConfig.usersFiltering.disable || botConfig.usersFiltering.usersToModerate.contains(message.from.userName)) {
                 val llmReply = yandexGptClient.getLlmReply(message.from.userName, message.forwardFromChat.title)
 
                 sendText(message.chatId, "@${message.from.userName} $llmReply")
@@ -67,14 +69,6 @@ class BotCheck(
     private fun Message.isForwardedFromChannel(): Boolean {
         val forwardFromChat = this.forwardFromChat ?: return false
         return forwardFromChat.type == "channel"
-    }
-
-    private fun Message.isTextual(): Boolean {
-        return this.text != null
-    }
-
-    private fun Message.isForwarded(): Boolean {
-        return this.forwardFrom != null
     }
 
     private fun sendText(victim: Long?, text: String?) {

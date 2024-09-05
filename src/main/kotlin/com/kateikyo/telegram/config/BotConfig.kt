@@ -1,4 +1,4 @@
-package com.kateikyo.telegram
+package com.kateikyo.telegram.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
@@ -8,6 +8,6 @@ import org.springframework.stereotype.Component
 class BotConfig(
     var token: String = "",
     var userOwnerId: Long = 0,
-    var groupIdsToReplyTo: List<Long> = emptyList(),
-    var usersToModerate: List<String> = emptyList()
+    var groupFiltering: GroupFiltering = GroupFiltering(),
+    var usersFiltering: UsersFiltering = UsersFiltering()
 )
