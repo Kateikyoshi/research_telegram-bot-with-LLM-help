@@ -1,0 +1,19 @@
+{
+  "result": {
+    "alternatives": [
+      {
+        "message": {
+          "role": "assistant",
+          "text": "Эта новость не является эксклюзивной."
+        },
+        "status": "ALTERNATIVE_STATUS_FINAL"
+      }
+    ],
+    "usage": {
+      "inputTextTokens": "49",
+      "completionTokens": "8",
+      "totalTokens": "57"
+    },
+    "modelVersion": "22.05.2024"
+  }
+}

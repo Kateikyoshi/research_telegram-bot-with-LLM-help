@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: telegram
+  lifecycle:
+    timeout-per-shutdown-phase: "20s"
+server:
+  shutdown: "graceful"
+
+bot:
+  token: 'tokenvalue'
+  userOwnerId: 803939696
+  groupIdsToReplyTo:
+    - '-311111111'
+  usersToModerate:
+    - 'username1'
+    - 'username2'
+yandex:
+  gpt:
+    url: 'https://llm.api.cloud.yandex.net/foundationModels/v1/completion'
+    key: 'your api key'
+    auth-type: 'Api-Key'
+    folder-id: 'your cloud folder id'
