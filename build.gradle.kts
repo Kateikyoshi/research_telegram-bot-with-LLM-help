@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.kateikyo"
-version = "0.0.2-SNAPSHOT"
+version = "0.0.3-SNAPSHOT-b"
 
 java {
 	toolchain {
@@ -29,6 +29,7 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+	testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
