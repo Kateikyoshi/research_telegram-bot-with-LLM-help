@@ -22,7 +22,7 @@ class YandexGptRequestTest{
               "completionOptions": {
                 "stream": false,
                 "temperature": 1,
-                "maxTokens": "30"
+                "maxTokens": "50"
               },
               "messages": [
                 {

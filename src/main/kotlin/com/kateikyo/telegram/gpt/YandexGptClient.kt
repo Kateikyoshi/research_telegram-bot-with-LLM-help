@@ -18,6 +18,12 @@ class YandexGptClient(
     fun getLlmReply(username: String, channelName: String): String {
         val request = YandexGptRequest()
         request.modelUri = request.modelUri.replace(FOLDER_ID_PLACEHOLDER, yandexGptConfig.folderId)
+        if (yandexGptConfig.systemText.isNotBlank()) {
+            request.messages[0].text = yandexGptConfig.systemText
+        }
+        if (yandexGptConfig.userText.isNotBlank()) {
+            request.messages[1].text = yandexGptConfig.userText
+        }
         request.messages[1].text = request.messages[1].text.replace(CHANNEL_NAME_PLACEHOLDER, channelName)
 
         return runBlocking {

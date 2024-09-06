@@ -9,5 +9,7 @@ class YandexGptConfig(
     var url: String = "",
     var key: String = "",
     var authType: String = "",
-    var folderId: String = ""
+    var folderId: String = "",
+    var systemText: String = "",
+    var userText: String = ""
 )
