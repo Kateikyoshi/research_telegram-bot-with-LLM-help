@@ -44,3 +44,5 @@ I chose Yandex Serverless Container to run bot every 30 mins or so to be cheap a
 12) Then go to Serverless Containers and just run it. Supposedly, you won't need any special configurations to
 make container reachable, so it should have no problems polling TG. Also, logs should work out of the box too.
 If your logger writes to console, you should see logs automatically in Yandex Cloud Logging.
+13) Don't forget to use ENVIRONMENT variables to change configs to your need. You can set ENV when in Serverless Container
+config
