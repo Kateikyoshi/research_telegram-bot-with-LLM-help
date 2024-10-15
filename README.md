@@ -46,3 +46,17 @@ make container reachable, so it should have no problems polling TG. Also, logs s
 If your logger writes to console, you should see logs automatically in Yandex Cloud Logging.
 13) Don't forget to use ENVIRONMENT variables to change configs to your need. You can set ENV when in Serverless Container
 config
+
+## Container registry
+### Setup yandex once
+1) run `yc container list`
+2) run `yc container registry create --name my-first-registry`
+save `registry id`, you will need it to push your containers
+3) run `yc container registry configure-docker`
+### Do this for each new release of your service
+1) see what images you got `docker images`
+2) build new one from terminal from the project root 
+`docker build -t cr.yandex/<registryid>/telegramapp:0.0.1 -f deploy/backend/Dockerfile .`
+replace `<registryid>` with your id
+3) push to Yandex `docker push cr.yandex/<registryid>/telegramapp:0.0.1`
+replace `<registryid>` with your id

@@ -22,13 +22,27 @@ class BotCheck(
     private val botsApi: TelegramBotsApi
 ) : TelegramLongPollingBot(botConfig.token) {
 
+    class EvaluatedMessage(
+        var mediaGroupId: String = "",
+        var repliedTo: Boolean = false
+    )
+
+    private val evaluatedMessages = mutableListOf<EvaluatedMessage>()
+
     @PostConstruct
     fun notifyOwnerAboutStarting() {
         botsApi.registerBot(this)
 
         if (logger.isDebugEnabled) {
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault())
-            this.sendText(botConfig.userOwnerId, "My backend starts, it is ${formatter.format(Instant.now())}")
+            this.sendTextToSmb(botConfig.userOwnerId, "My backend starts, it is ${formatter.format(Instant.now())}")
+        }
+    }
+
+    @Synchronized
+    fun addEvaluatedMessage(message: Message) {
+        if (message.mediaGroupId != null) {
+            evaluatedMessages.add(EvaluatedMessage(mediaGroupId = message.mediaGroupId))
         }
     }
 
@@ -53,6 +67,15 @@ class BotCheck(
             logger.debug("Update object is null, aborting")
             return
         }
+        val repeated = evaluatedMessages.find { it.mediaGroupId == message.mediaGroupId }
+        if (repeated != null) {
+            logger.debug("mediaGroupId ${message.mediaGroupId} was evaluated already")
+            if (!repeated.repliedTo) {
+                sendText(message, botConfig.manyAttachmentsMessage)
+                repeated.repliedTo = true
+            }
+            return
+        }
 
         logger.debug("General info: chat id: {}, isForwarded: {}, username: {}, forwardFromChat title: {}",
             message.chatId, message.isForwardedFromChannel(), message.from.userName, message.forwardFromChat?.title)
@@ -68,9 +91,11 @@ class BotCheck(
         } else if (message.isUserMessage) {
             sendTextReply(message, "Don't talk to me, peasant")
         }
+        addEvaluatedMessage(message)
     }
 
     private fun consultLlmAndSend(message: Message) {
+        logger.debug("Consulting LLM")
         if (message.from.userName != null && message.from.userName.isNotBlank()) {
             val llmReply = yandexGptClient.getLlmReply(message.from.userName, message.forwardFromChat.title)
             sendTextWithPing(message, llmReply)
@@ -91,7 +116,7 @@ class BotCheck(
     private fun sendTextWithPing(message: Message, whatToSay: String) {
 
         if (message.chatId == null) {
-            throw IllegalArgumentException("victim can't be null")
+            throw IllegalArgumentException("chatId can't be null")
         }
         if (message.from.userName == null) {
             throw IllegalArgumentException("You can't ping null nicknames")
@@ -115,7 +140,7 @@ class BotCheck(
     private fun sendTextReply(message: Message, whatToSay: String) {
 
         if (message.chatId == null) {
-            throw IllegalArgumentException("victim can't be null")
+            throw IllegalArgumentException("chatId can't be null")
         }
 
         val sendMessage = SendMessage.builder()
@@ -131,7 +156,25 @@ class BotCheck(
         }
     }
 
-    private fun sendText(victim: Long?, text: String?) {
+    private fun sendText(message: Message, whatToSay: String) {
+
+        if (message.chatId == null) {
+            throw IllegalArgumentException("chatId can't be null")
+        }
+
+        val sendMessage = SendMessage.builder()
+            .chatId(message.chatId)
+            .text(whatToSay)
+            .build()
+
+        try {
+            execute(sendMessage)
+        } catch (e: TelegramApiException) {
+            logger.info("sendTextReply ex!: ", e)
+        }
+    }
+
+    private fun sendTextToSmb(victim: Long?, text: String?) {
 
         if (victim == null) {
             throw IllegalArgumentException("victim can't be null")
