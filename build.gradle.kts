@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.kateikyo"
-version = "0.0.3c-SNAPSHOT"
+version = "0.0.4-SNAPSHOT"
 
 java {
 	toolchain {
